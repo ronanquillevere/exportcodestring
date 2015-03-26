@@ -20,8 +20,8 @@
   <source path='generator' />
 	
 	
-	<generate-with class="com.github.ronanquillevere.generator.ExportCodeAsStringGenerator">
-		<when-type-assignable class="com.github.ronanquillevere.client.ExportedCodeAsString" />    
+	<generate-with class="com.github.ronanquillevere.generator.BuildInfoGenerator">
+		<when-type-assignable class="com.github.ronanquillevere.generator.BuildInfo" />    
 	</generate-with> 
 
 </module>
