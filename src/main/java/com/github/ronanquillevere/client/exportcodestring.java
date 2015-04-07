@@ -10,6 +10,9 @@ public class exportcodestring implements EntryPoint {
  
   public void onModuleLoad() {
       BuildInfo buildInfo = GWT.create(BuildInfo.class);
+      
+      Export export =  GWT.create(Export.class);
+      
       Window.alert("Build Timestamp = " + buildInfo.getBuildTimestamp());
   }
 }

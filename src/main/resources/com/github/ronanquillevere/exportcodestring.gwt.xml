@@ -23,5 +23,9 @@
 	<generate-with class="com.github.ronanquillevere.generator.BuildInfoGenerator">
 		<when-type-assignable class="com.github.ronanquillevere.generator.BuildInfo" />    
 	</generate-with> 
+	
+	<generate-with class="com.github.ronanquillevere.generator.ExportGenerator">
+		<when-type-assignable class="com.github.ronanquillevere.generator.ExportShell" />    
+	</generate-with> 
 
 </module>
