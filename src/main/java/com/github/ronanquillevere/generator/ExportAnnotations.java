@@ -26,7 +26,18 @@ public class ExportAnnotations
     
     Class<?> type();
     
-    String methodName();
+    String marker();
+  }
+  
+ /**
+ * Marker should by unique across method names 
+ *
+ */
+@Retention(RetentionPolicy.RUNTIME)
+  @Target(ElementType.METHOD)
+  public static @interface ExportMaker 
+  {
+      String name();
   }
 
 }

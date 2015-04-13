@@ -1,10 +1,9 @@
 package com.github.ronanquillevere.client;
 
 import com.github.ronanquillevere.generator.ExportAnnotations.ExportMethod;
-import com.github.ronanquillevere.generator.ExportShell;
 
-public interface Export extends ExportShell
+public interface Export
 {
-    @ExportMethod(type=WhatIWantToExport.class, methodName="myMethod")
-    String getMethod();
+    @ExportMethod(type=ClassWhereIWantToExportSomeMethodCode.class, marker="myMethod")
+    String getMethodCode();
 }

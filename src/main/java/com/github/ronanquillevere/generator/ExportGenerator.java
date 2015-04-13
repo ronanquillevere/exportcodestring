@@ -8,6 +8,8 @@ import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+
 import com.github.ronanquillevere.client.Export;
 import com.github.ronanquillevere.generator.ExportAnnotations.ExportMethod;
 import com.google.gwt.core.ext.Generator;
@@ -18,6 +20,7 @@ import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.core.ext.typeinfo.JParameter;
 import com.google.gwt.core.ext.typeinfo.TypeOracle;
+import com.google.gwt.thirdparty.guava.common.base.Strings;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
 
@@ -80,11 +83,10 @@ public class ExportGenerator extends Generator {
  
         sourceWriter.commit(logger);
         
-        return null;
-        //packageName + "." + simpleName;
+        return packageName + "." + simpleName;
     }
  
-    private void writeExportedMethodCode(SourceWriter sourceWriter, JMethod jMethod)
+    private void writeExportedMethodCode(SourceWriter sourceWriter, JMethod jMethod) throws UnableToCompleteException
     {
         JParameter[] parameters = jMethod.getParameters();
         
@@ -97,41 +99,42 @@ public class ExportGenerator extends Generator {
         if (!jMethod.isPublic())
             throw new RuntimeException("method return type must be String");
 
+        ExportMethod exportInfos = jMethod.getAnnotation(ExportMethod.class);
+        
+        String marker = exportInfos.marker();
+        
+        if (Strings.isNullOrEmpty(marker))
+            throw new RuntimeException("marker identifiying destination method should be filled and not empty");
+        
+        
+        Class<?> type = exportInfos.type();        
+        String filePath = type.getName().replace('.', '/') + ".java";
+        String fileContents = getResourceContents(filePath);
+        int methodIndex = fileContents.indexOf(marker);
+        
+        int beginIndex = fileContents.indexOf("{", methodIndex) + 1;
+        
+        int endIndex = beginIndex;
+        
+        int nextOpen = fileContents.indexOf("{", beginIndex);
+        int nextClose = fileContents.indexOf("}", beginIndex);
+        
+        if (nextOpen == -1 || nextClose < nextOpen){
+            endIndex = nextClose;
+        }
+        else
+        {
+            
+        }
+        
+        String methodContent = fileContents.substring(beginIndex, endIndex);
         
         sourceWriter.println("public final " + jMethod.getReturnType().getSimpleSourceName() + " " + jMethod.getName() + "(){");
-        
-        try
-        {
-            writeExportMethodContent(sourceWriter, jMethod);
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-       
-        
+        sourceWriter.println("return \"" + StringEscapeUtils.escapeJava(methodContent) + "\";");
         sourceWriter.println("}");
 
-        
     }
 
-    private void writeExportMethodContent(SourceWriter sourceWriter, JMethod jMethod) throws NoSuchMethodException, SecurityException, UnableToCompleteException
-    {
-        ExportMethod annotation = jMethod.getAnnotation(ExportMethod.class);
-        Class<?> type = annotation.type();
-        
-        String filename = type.getName().replace('.', '/') + ".java";
-        String fileContents = getResourceContents(filename);
-        
-        
-        String methodName = annotation.methodName();
-        
-
-
-        
-        sourceWriter.println(fileContents);
-        
-    }
 
     private String getCurrentTimestampString() {
         SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmm");
