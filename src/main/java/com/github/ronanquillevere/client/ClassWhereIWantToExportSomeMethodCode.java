@@ -10,6 +10,15 @@ public class ClassWhereIWantToExportSomeMethodCode
         String test = "test";
         int var2 = 5;
         test += String.valueOf(var2);
-        System.out.println(test);
+        
+        for (int i = 0; i < 10; i++)
+        {
+            var2++;
+            if (var2 > 8)
+            {
+                var2 += 1;
+            }
+        }
+        System.out.println(test + var2);
     }
 }

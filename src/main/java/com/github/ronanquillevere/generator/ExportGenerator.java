@@ -70,7 +70,6 @@ public class ExportGenerator extends Generator {
         if (sourceWriter == null)
             return qualifiedClassName;
  
-        
         JMethod[] methods = classType.getMethods();
         for (JMethod jMethod : methods)
         {
@@ -78,9 +77,7 @@ public class ExportGenerator extends Generator {
                   writeExportedMethodCode(sourceWriter, jMethod);
             }
         }
-        
 
- 
         sourceWriter.commit(logger);
         
         return packageName + "." + simpleName;
@@ -110,24 +107,8 @@ public class ExportGenerator extends Generator {
         Class<?> type = exportInfos.type();        
         String filePath = type.getName().replace('.', '/') + ".java";
         String fileContents = getResourceContents(filePath);
-        int methodIndex = fileContents.indexOf(marker);
         
-        int beginIndex = fileContents.indexOf("{", methodIndex) + 1;
-        
-        int endIndex = beginIndex;
-        
-        int nextOpen = fileContents.indexOf("{", beginIndex);
-        int nextClose = fileContents.indexOf("}", beginIndex);
-        
-        if (nextOpen == -1 || nextClose < nextOpen){
-            endIndex = nextClose;
-        }
-        else
-        {
-            
-        }
-        
-        String methodContent = fileContents.substring(beginIndex, endIndex);
+        String methodContent = getCodeToExport(fileContents, marker, type);
         
         sourceWriter.println("public final " + jMethod.getReturnType().getSimpleSourceName() + " " + jMethod.getName() + "(){");
         sourceWriter.println("return \"" + StringEscapeUtils.escapeJava(methodContent) + "\";");
@@ -135,11 +116,54 @@ public class ExportGenerator extends Generator {
 
     }
 
-
-    private String getCurrentTimestampString() {
-        SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmm");
-        return format.format(new Date());
+    private String getCodeToExport(String fileContents, String marker, Class<?> type)
+    {
+        int methodIndex = fileContents.indexOf(marker);
+        
+        if (methodIndex == -1)
+            throw new RuntimeException("Could not find marker;"+ marker +";inside destination class;" + type.getSimpleName() );
+        
+        
+        int beginIndex = findOpenBraces(fileContents, methodIndex) + 1;
+        
+        
+        int endIndex = findEndIndex(fileContents, beginIndex);
+        
+        String methodContent = fileContents.substring(beginIndex, endIndex);
+        return methodContent;
     }
+
+    private int findEndIndex(String fileContents, int beginIndex)
+    {
+        int endIndex = beginIndex;
+        
+        int nextOpen = findOpenBraces(fileContents, beginIndex);
+        int nextClose = findCloseBraces(fileContents, beginIndex);
+        
+        
+        if (nextOpen != -1  && nextOpen < nextClose)
+        {
+            int closing = findEndIndex(fileContents, nextOpen + 1);
+            endIndex =  findCloseBraces(fileContents, closing + 1);
+        }
+        else if (nextOpen == -1 || nextClose < nextOpen)
+        {
+            endIndex = nextClose;
+        }
+       
+        return endIndex;
+    }
+
+    private int findCloseBraces(String fileContents, int beginIndex)
+    {
+        return fileContents.indexOf("}", beginIndex);
+    }
+
+    private int findOpenBraces(String fileContents, int beginIndex)
+    {
+        return fileContents.indexOf("{", beginIndex);
+    }
+
     
     /**
      * Get the full contents of a resource.
