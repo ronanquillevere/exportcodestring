@@ -7,7 +7,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.ronanquillevere</groupId>
   <artifactId>exportcodestring</artifactId>
-  <packaging>war</packaging>
+  <packaging>jar</packaging>
   <version>1.0-SNAPSHOT</version>
   <name>exportcodestring</name>
 
@@ -63,24 +63,14 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
-        <version>2.7.0</version>
+        <version>2.6.1</version>
         <executions>
           <execution>
             <goals>
-              <goal>compile</goal>
-              <goal>test</goal>
-              <goal>generateAsync</goal>
+              <goal>source-jar</goal>
             </goals>
           </execution>
-        </executions>
-        <!-- Plugin configuration. There are many available options, see 
-          gwt-maven-plugin documentation at codehaus.org -->
-        <configuration>
-          <runTarget>exportcodestring.html</runTarget>
-          <modules>
-            <module>com.github.ronanquillevere.exportcodestring</module>
-          </modules>
-        </configuration>
+        </executions> 
       </plugin>
     </plugins>
   </build>
