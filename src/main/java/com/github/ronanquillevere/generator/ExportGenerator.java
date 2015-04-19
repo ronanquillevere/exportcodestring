@@ -5,12 +5,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 
-import com.github.ronanquillevere.client.Export;
 import com.github.ronanquillevere.generator.ExportAnnotations.ExportMethod;
 import com.google.gwt.core.ext.Generator;
 import com.google.gwt.core.ext.GeneratorContext;
@@ -18,7 +15,6 @@ import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JMethod;
-import com.google.gwt.core.ext.typeinfo.JParameter;
 import com.google.gwt.core.ext.typeinfo.TypeOracle;
 import com.google.gwt.thirdparty.guava.common.base.Strings;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
@@ -59,8 +55,9 @@ public class ExportGenerator extends Generator {
  
         ClassSourceFileComposerFactory composerFactory = new ClassSourceFileComposerFactory(
                 packageName, simpleName);
-        composerFactory.addImport(Export.class.getCanonicalName());
-        composerFactory.addImplementedInterface(Export.class.getName());
+        
+        //composerFactory.addImport(Export.class.getCanonicalName());
+        //composerFactory.addImplementedInterface(Export.class.getName());
  
         PrintWriter printWriter = context.tryCreate(logger, packageName, simpleName);
         if (printWriter == null)
@@ -85,10 +82,10 @@ public class ExportGenerator extends Generator {
  
     private void writeExportedMethodCode(SourceWriter sourceWriter, JMethod jMethod) throws UnableToCompleteException
     {
-        JParameter[] parameters = jMethod.getParameters();
+//        JParameter[] parameters = jMethod.getParameters();
         
-        if (parameters.length > 0)
-            throw new RuntimeException("method cannot have parameters");
+//        if (parameters.length > 0)
+//            throw new RuntimeException("method cannot have parameters");
         
         if (!jMethod.getReturnType().getQualifiedSourceName().equals(String.class.getName()))
             throw new RuntimeException("method return type must be String");
@@ -110,10 +107,21 @@ public class ExportGenerator extends Generator {
         
         String methodContent = getCodeToExport(fileContents, marker, type);
         
-        sourceWriter.println("public final " + jMethod.getReturnType().getSimpleSourceName() + " " + jMethod.getName() + "(){");
+        String methodSignature = getMethodSignature(jMethod);
+        
+        sourceWriter.println(methodSignature);
+        
+        sourceWriter.println("{");
         sourceWriter.println("return \"" + StringEscapeUtils.escapeJava(methodContent) + "\";");
         sourceWriter.println("}");
 
+    }
+
+    private String getMethodSignature(JMethod jMethod)
+    {
+        StringBuilder b = new StringBuilder();
+        b.append(jMethod.getReadableDeclaration(false, true, true, false, true));
+        return b.toString();
     }
 
     private String getCodeToExport(String fileContents, String marker, Class<?> type)
