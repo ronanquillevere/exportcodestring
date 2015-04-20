@@ -48,7 +48,8 @@ public class ExportGenerator extends Generator {
             logger.log(TreeLogger.ERROR, "Unable to find metadata for type '" + typeName + "'", null);
             throw new UnableToCompleteException();
         }
- 
+        
+        String interfaceName = classType.getSimpleSourceName();
         String packageName = classType.getPackage().getName();
         String simpleName = classType.getSimpleSourceName() + "Impl";
         String qualifiedClassName = packageName + "." + simpleName;
@@ -57,7 +58,7 @@ public class ExportGenerator extends Generator {
                 packageName, simpleName);
         
         //composerFactory.addImport(Export.class.getCanonicalName());
-        //composerFactory.addImplementedInterface(Export.class.getName());
+        composerFactory.addImplementedInterface(interfaceName);
  
         PrintWriter printWriter = context.tryCreate(logger, packageName, simpleName);
         if (printWriter == null)

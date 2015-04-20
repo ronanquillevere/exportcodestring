@@ -16,14 +16,7 @@
   <entry-point class='com.github.ronanquillevere.client.exportcodestring' />
 
   <!-- Specify the paths for translatable code                    -->
-  <source path='client' />
+  <!-- <source path='client' /> -->
   <source path='generator' />
-	
-	<generate-with class="com.github.ronanquillevere.generator.ExportGenerator">
-		<when-type-assignable class="com.github.ronanquillevere.client.Export" /> 
-	</generate-with> 
-	
-<!-- 	<replace-with class="com.github.ronanquillevere.client.ExporImpl">
-		<when-type-is class="com.github.ronanquillevere.client.Export"/>
-	</replace-with> -->
+
 </module>
